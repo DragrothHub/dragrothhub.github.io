@@ -110,13 +110,13 @@ async function getMedianFilteredImageData(width, height, ctx, colors, medianRadi
     // // Median filter imageData
     // var imageData = await medianFilter(newImageData, medianRadius, colors, ctx);
 
-    // return imageDataToSimpColoredMat(imageData, colors);
-
-    return paintByNumbersPipeline(
+    var imageDataChanged = paintByNumbersPipeline(
         imageData,
         colors, // [{r,g,b}, ...]
         medianRadius // minimale Regionengröße
     );
+
+    return imageDataToSimpColoredMat(imageDataChanged, colors);
 }
 
 function getOutlinedImageData(mat, ctx)
