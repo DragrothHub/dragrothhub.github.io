@@ -210,11 +210,12 @@ async function processImageData(width, height, ctx, colors, medianRadius)
     loadingSplash.style.display = 'none';
 }
 
+let targetImageSize = 1000;
 function getScaleForImage(img)
 {
     // return 1; // Deactivated for further testing
 
-    var threshold = 1000;
+    var threshold = targetImageSize;
     var maxPixels = Math.max(img.width, img.height);
 
     if(maxPixels < threshold)
@@ -222,7 +223,7 @@ function getScaleForImage(img)
         return 1;
     }
 
-    return 500 / maxPixels;
+    return targetImageSize / maxPixels;
 }
 
 function reduceColors(colors, medianRadiusFactor)
