@@ -222,7 +222,7 @@ function labelsToImageData(labelMap, colors, width, height) {
  * @param {number} majorityIterations
  * @returns {ImageData}
  */
-export function paintByNumbersPipeline(
+function paintByNumbersPipeline(
   imageData,
   colors,
   minRegionSize = 120,
