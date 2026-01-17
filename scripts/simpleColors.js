@@ -101,16 +101,22 @@ async function getMedianFilteredImageData(width, height, ctx, colors, medianRadi
     // Image data
     var imageData = ctx.getImageData(0, 0, width, height);
 
-    // Reduced colors (matrix)
-    var mat = imageDataToSimpColoredMat(imageData, colors);
+    // // Reduced colors (matrix)
+    // var mat = imageDataToSimpColoredMat(imageData, colors);
 
-    // Reduced colors (imageData)
-    var newImageData = matToImageData(mat, colors, ctx);
+    // // Reduced colors (imageData)
+    // var newImageData = matToImageData(mat, colors, ctx);
 
-    // Median filter imageData
-    var imageData = await medianFilter(newImageData, medianRadius, colors, ctx);
+    // // Median filter imageData
+    // var imageData = await medianFilter(newImageData, medianRadius, colors, ctx);
 
-    return imageDataToSimpColoredMat(imageData, colors);
+    // return imageDataToSimpColoredMat(imageData, colors);
+
+    return paintByNumbersPipeline(
+        imageData,
+        colors, // [{r,g,b}, ...]
+        medianRadius // minimale Regionengröße
+    );
 }
 
 function getOutlinedImageData(mat, ctx)
@@ -170,7 +176,8 @@ async function processImageData(width, height, ctx, colors, medianRadius)
     var loadingSplash = document.getElementById('loadingSplash');
     loadingSplash.style.display = 'block';
 
-    loadingSplash.dispatchEvent(new CustomEvent('splashUpdate', { detail: 'Median Filter' }));
+    // loadingSplash.dispatchEvent(new CustomEvent('splashUpdate', { detail: 'Median Filter' }));
+    loadingSplash.dispatchEvent(new CustomEvent('splashUpdate', { detail: 'CCL Regions' }));
 
     console.log('Start: getMedianFilteredImageData');
     // MedianFilter
