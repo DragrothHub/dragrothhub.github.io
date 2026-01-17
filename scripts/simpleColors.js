@@ -212,7 +212,7 @@ async function processImageData(width, height, ctx, colors, medianRadius)
 
 function getScaleForImage(img)
 {
-    return 1; // Deactivated for further testing
+    // return 1; // Deactivated for further testing
 
     var threshold = 1000;
     var maxPixels = Math.max(img.width, img.height);
