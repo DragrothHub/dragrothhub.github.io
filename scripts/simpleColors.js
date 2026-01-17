@@ -1,16 +1,48 @@
-// Reduce colors to found by k-mean
-function getBestFittingColor(colors, col) 
+// // Reduce colors to found by k-mean
+// function getBestFittingColor(colors, col) 
+// {
+//     var nearest;
+//     var nearestDistsq = 1000000;
+//     var l = colors.length;
+//     for (var i = 0; i < l; i++)
+//     {
+//         var pcol = colors[i];
+
+//         var distsq = Math.pow(pcol.r - col.r, 2) +
+//             Math.pow(pcol.g - col.g, 2) +
+//             Math.pow(pcol.b - col.b, 2);
+
+//         if (distsq < nearestDistsq)
+//         {
+//             nearest = i;
+//             nearestDistsq = distsq;
+//         }
+//     }
+
+//     return nearest;
+// }
+
+// Reduce colors to found by k-mean (LAB version)
+function getBestFittingColor(colors, col)
 {
-    var nearest;
-    var nearestDistsq = 1000000;
+    var nearest = 0;
+    var nearestDistsq = Infinity;
+
+    // Zielpixel einmal umrechnen
+    var lab = rgbToLab(col.r, col.g, col.b);
+
     var l = colors.length;
     for (var i = 0; i < l; i++)
     {
         var pcol = colors[i];
 
-        var distsq = Math.pow(pcol.r - col.r, 2) +
-            Math.pow(pcol.g - col.g, 2) +
-            Math.pow(pcol.b - col.b, 2);
+        // Palettenfarbe in LAB
+        var plab = rgbToLab(pcol.r, pcol.g, pcol.b);
+
+        var distsq =
+            Math.pow(plab.l - lab.l, 2) +
+            Math.pow(plab.a - lab.a, 2) +
+            Math.pow(plab.b - lab.b, 2);
 
         if (distsq < nearestDistsq)
         {
