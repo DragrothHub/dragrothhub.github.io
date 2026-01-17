@@ -1,5 +1,36 @@
 /* =========================================
-   1. Pixel → Label (Palette-Zuordnung)
+   RGB <-> LAB
+   ========================================= */
+
+function rgbToXyz(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  r = r > 0.04045 ? ((r + 0.055) / 1.055) ** 2.4 : r / 12.92;
+  g = g > 0.04045 ? ((g + 0.055) / 1.055) ** 2.4 : g / 12.92;
+  b = b > 0.04045 ? ((b + 0.055) / 1.055) ** 2.4 : b / 12.92;
+
+  return {
+    x: (r * 0.4124 + g * 0.3576 + b * 0.1805) / 0.95047,
+    y: (r * 0.2126 + g * 0.7152 + b * 0.0722),
+    z: (r * 0.0193 + g * 0.1192 + b * 0.9505) / 1.08883
+  };
+}
+
+function xyzToLab(x, y, z) {
+  const f = t => t > 0.008856 ? Math.cbrt(t) : (7.787 * t + 16 / 116);
+  return {
+    l: 116 * f(y) - 16,
+    a: 500 * (f(x) - f(y)),
+    b: 200 * (f(y) - f(z))
+  };
+}
+
+function rgbToLab(r, g, b) {
+  const xyz = rgbToXyz(r, g, b);
+  return xyzToLab(xyz.x, xyz.y, xyz.z);
+}
+
+/* =========================================
+   1. Pixel → Label (LAB)
    ========================================= */
 
 function assignLabels(imageData, colors) {
@@ -25,6 +56,7 @@ function assignLabels(imageData, colors) {
         best = c;
       }
     }
+
     labels[p] = best;
   }
 
@@ -32,7 +64,48 @@ function assignLabels(imageData, colors) {
 }
 
 /* =========================================
-   2. Connected Components (Regionen)
+   2. Majority Vote Filter (Label-basiert)
+   ========================================= */
+
+function majorityFilter(labels, width, height, iterations = 2) {
+  const out = new Uint16Array(labels.length);
+  const dirs = [-1, 0, 1];
+
+  for (let it = 0; it < iterations; it++) {
+    out.set(labels);
+
+    for (let y = 1; y < height - 1; y++) {
+      for (let x = 1; x < width - 1; x++) {
+        const idx = y * width + x;
+        const count = {};
+
+        for (const dy of dirs) {
+          for (const dx of dirs) {
+            const v = labels[idx + dy * width + dx];
+            count[v] = (count[v] || 0) + 1;
+          }
+        }
+
+        let best = labels[idx];
+        let max = 0;
+
+        for (const k in count) {
+          if (count[k] > max) {
+            max = count[k];
+            best = Number(k);
+          }
+        }
+
+        out[idx] = best;
+      }
+    }
+
+    labels.set(out);
+  }
+}
+
+/* =========================================
+   3. Connected Components
    ========================================= */
 
 function findRegions(labelMap, width, height) {
@@ -79,7 +152,7 @@ function findRegions(labelMap, width, height) {
 }
 
 /* =========================================
-   3. Kleine Regionen mergen
+   4. Kleine Regionen mergen
    ========================================= */
 
 function mergeSmallRegions(regions, labelMap, width, minSize) {
@@ -89,9 +162,6 @@ function mergeSmallRegions(regions, labelMap, width, minSize) {
     const neighborCount = {};
 
     for (const idx of region.pixels) {
-      const x = idx % width;
-      const y = (idx / width) | 0;
-
       const neighbors = [
         idx - 1, idx + 1,
         idx - width, idx + width
@@ -123,7 +193,7 @@ function mergeSmallRegions(regions, labelMap, width, minSize) {
 }
 
 /* =========================================
-   4. Labels → ImageData
+   5. Labels → ImageData
    ========================================= */
 
 function labelsToImageData(labelMap, colors, width, height) {
@@ -142,23 +212,29 @@ function labelsToImageData(labelMap, colors, width, height) {
 }
 
 /* =========================================
-   Public Pipeline API
+   Public Pipeline
    ========================================= */
 
 /**
  * @param {ImageData} imageData
  * @param {{r:number,g:number,b:number}[]} colors
  * @param {number} minRegionSize
+ * @param {number} majorityIterations
  * @returns {ImageData}
  */
-function paintByNumbersPipeline(
+export function paintByNumbersPipeline(
   imageData,
   colors,
-  minRegionSize = 20
+  minRegionSize = 120,
+  majorityIterations = 2
 ) {
   const { width, height } = imageData;
 
   const labels = assignLabels(imageData, colors);
+
+  // 🔴 DAS ist der entscheidende Schritt
+  majorityFilter(labels, width, height, majorityIterations);
+
   const regions = findRegions(labels, width, height);
   mergeSmallRegions(regions, labels, width, minRegionSize);
 

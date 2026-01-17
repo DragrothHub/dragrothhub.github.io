@@ -96,6 +96,8 @@ function matToImageData(mat, colors, context)
     return imgData;
 }
 
+let cclMinRegionSize = 120;
+let majorityIterations = 2;
 async function getMedianFilteredImageData(width, height, ctx, colors, medianRadius)
 {
     // Image data
@@ -113,7 +115,8 @@ async function getMedianFilteredImageData(width, height, ctx, colors, medianRadi
     var imageDataChanged = paintByNumbersPipeline(
         imageData,
         colors, // [{r,g,b}, ...]
-        medianRadius // minimale Regionengröße
+        cclMinRegionSize, // minimale Regionengröße
+        majorityIterations
     );
 
     return imageDataToSimpColoredMat(imageDataChanged, colors);
