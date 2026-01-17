@@ -44,7 +44,10 @@ function findColors()
 
     img.onload = function ()
     {
-        foundColors = findColorsWithKmeans(img, ctx, numberOfColors);
+        // foundColors = findColorsWithKmeans(img, ctx, numberOfColors);
+        ctx.drawImage(img, 0, 0, 200, 200);
+        var imageData = ctx.getImageData(0, 0, 200, 200).data;
+        foundColors = extractPalette(imageData, numberOfColors);
 
         // Scale image (reduce pixels to optimize performance)
         var scale = getScaleForImage(img);
