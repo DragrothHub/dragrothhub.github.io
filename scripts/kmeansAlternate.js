@@ -174,7 +174,7 @@ function kMeans(pixels, k, maxIterations = 20, epsilon = 0.5) {
 /**
  * @param {ImageData} imageData
  * @param {number} colorCount
- * @returns {string[]} HEX colors
+ * @returns {r,g,b} RGB colors
  */
 function extractPalette(imageData, colorCount) {
   const pixels = [];
@@ -186,6 +186,6 @@ function extractPalette(imageData, colorCount) {
   const centroids = kMeans(pixels, colorCount);
 
   return centroids.map(c =>
-    rgbToHex(labToRgb(c.l, c.a, c.b))
+    labToRgb(c.l, c.a, c.b)
   );
 }
