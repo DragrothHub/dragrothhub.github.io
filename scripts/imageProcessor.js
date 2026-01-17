@@ -1,6 +1,6 @@
 // All scripts for image processing have to be loaded here
 let foundColors = undefined;
-var numberOfColors = 5;
+var numberOfColors = 10;
 var medianRadius = 10;
 var detailsSelect = document.getElementById('detailsSelect');
 var findColorsButton = document.getElementById('findColorsButton');
