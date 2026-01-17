@@ -176,7 +176,7 @@ function kMeans(pixels, k, maxIterations = 20, epsilon = 0.5) {
  * @param {number} colorCount
  * @returns {string[]} HEX colors
  */
-export function extractPalette(imageData, colorCount) {
+function extractPalette(imageData, colorCount) {
   const { data } = imageData;
   const pixels = [];
 
