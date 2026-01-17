@@ -55,23 +55,13 @@ function findColors()
         canvas.width = newWidth;
         ctx.drawImage(img, 0, 0);
 
-        var foundColorsHex = [];
         for (var i = 0; i < foundColors.length; i++)
         {
-            foundColorsHex.push(rgbToHex(foundColors[i]));
+            var hexColor = rgbToHex(foundColors[i]);
+
+            var p = document.getElementById('c'+ (i + 1));
+            p.style.backgroundColor = hexColor;
         }
-
-        var p1 = document.getElementById('c1');
-        var p2 = document.getElementById('c2');
-        var p3 = document.getElementById('c3');
-        var p4 = document.getElementById('c4');
-        var p5 = document.getElementById('c5');
-
-        p1.style.backgroundColor = foundColorsHex[0];
-        p2.style.backgroundColor = foundColorsHex[1];
-        p3.style.backgroundColor = foundColorsHex[2];
-        p4.style.backgroundColor = foundColorsHex[3];
-        p5.style.backgroundColor = foundColorsHex[4];
 
         detailsAndGenerateGroup.style.display = 'block';
         colorDivContainer.style.display = 'inline-flex';
