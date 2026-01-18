@@ -213,6 +213,10 @@ async function processImageData(width, height, ctx, colors, medianRadius, scale)
     var medianFilteredMat = await getMedianFilteredImageData(width, height, ctx, colors, medianRadius, scale);
     console.log('End: getMedianFilteredImageData');
 
+    // rescale image size back to big
+    width = Math.round(width * (1 / scale));
+    height = Math.round(height * (1 / scale));
+
     loadingSplash.dispatchEvent(new CustomEvent('splashUpdate', { detail: 'Generate Labels' }));
     
     console.log('Start: generateLabels');
