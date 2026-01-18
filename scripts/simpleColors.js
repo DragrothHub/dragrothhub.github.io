@@ -241,8 +241,10 @@ async function processImageData(width, height, ctx, colors, medianRadius, scale)
 }
 
 let targetImageSize = 1000;
+let fixedScale = 3;
 function getScaleForImage(img)
 {
+    return fixedScale;
     // return 1; // Deactivated for further testing
 
     var threshold = targetImageSize;
