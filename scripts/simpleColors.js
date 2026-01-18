@@ -241,7 +241,7 @@ async function processImageData(width, height, ctx, colors, medianRadius, scale)
 }
 
 let targetImageSize = 1000;
-let fixedScale = 3;
+let fixedScale = 1/3;
 function getScaleForImage(img)
 {
     return fixedScale;
