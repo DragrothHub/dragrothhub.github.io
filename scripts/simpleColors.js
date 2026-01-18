@@ -244,6 +244,28 @@ let targetImageSize = 1000;
 let fixedScale = 1/3;
 function getScaleForImage(img)
 {
+    var detailsSelect = document.getElementById('detailsSelect');
+
+    // Switch detail depending on slider
+    switch(detailsSelect.value)
+    {
+        case '1':
+            fixedScale = 1/6;
+            break
+        case '2':
+            fixedScale = 1/5;
+            break
+        case '3':
+            fixedScale = 1/4;
+            break;
+        case '4':
+            fixedScale = 1/3;
+            break;
+        case '5':
+            fixedScale = 1/2;
+            break;
+    }
+
     return fixedScale;
     // return 1; // Deactivated for further testing
 
