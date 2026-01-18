@@ -98,7 +98,7 @@ function matToImageData(mat, colors, context)
 
 let cclMinRegionSize = 120;
 let majorityIterations = 2;
-async function getMedianFilteredImageData(width, height, ctx, colors, medianRadius)
+async function getMedianFilteredImageData(width, height, ctx, colors, medianRadius, scale)
 {
     // Image data
     var imageData = ctx.getImageData(0, 0, width, height);
@@ -119,7 +119,33 @@ async function getMedianFilteredImageData(width, height, ctx, colors, medianRadi
         majorityIterations
     );
 
-    return imageDataToSimpColoredMat(imageDataChanged, colors);
+    let imageDataChangedResized = resizeImageDataNearest(imageDataChanged, Math.round(width * (1 / scale)), Math.round(height * (1 / scale)));
+
+    return imageDataToSimpColoredMat(imageDataChangedResized, colors);
+}
+
+function resizeImageDataNearest(src, targetWidth, targetHeight) {
+  const dst = new ImageData(targetWidth, targetHeight);
+
+  const sx = src.width / targetWidth;
+  const sy = src.height / targetHeight;
+
+  for (let y = 0; y < targetHeight; y++) {
+    const syi = Math.floor(y * sy);
+    for (let x = 0; x < targetWidth; x++) {
+      const sxi = Math.floor(x * sx);
+
+      const srcIdx = (syi * src.width + sxi) * 4;
+      const dstIdx = (y * targetWidth + x) * 4;
+
+      dst.data[dstIdx]     = src.data[srcIdx];
+      dst.data[dstIdx + 1] = src.data[srcIdx + 1];
+      dst.data[dstIdx + 2] = src.data[srcIdx + 2];
+      dst.data[dstIdx + 3] = 255;
+    }
+  }
+
+  return dst;
 }
 
 function getOutlinedImageData(mat, ctx)
@@ -174,7 +200,7 @@ function updateSplashDescription(event)
 }
 document.getElementById('loadingSplash').addEventListener('splashUpdate', (e) => { updateSplashDescription(e) }, false);
 
-async function processImageData(width, height, ctx, colors, medianRadius)
+async function processImageData(width, height, ctx, colors, medianRadius, scale)
 {
     var loadingSplash = document.getElementById('loadingSplash');
     loadingSplash.style.display = 'block';
@@ -184,7 +210,7 @@ async function processImageData(width, height, ctx, colors, medianRadius)
 
     console.log('Start: getMedianFilteredImageData');
     // MedianFilter
-    var medianFilteredMat = await getMedianFilteredImageData(width, height, ctx, colors, medianRadius);
+    var medianFilteredMat = await getMedianFilteredImageData(width, height, ctx, colors, medianRadius, scale);
     console.log('End: getMedianFilteredImageData');
 
     loadingSplash.dispatchEvent(new CustomEvent('splashUpdate', { detail: 'Generate Labels' }));
@@ -246,7 +272,7 @@ function reduceColors(colors, medianRadiusFactor)
 
         console.log(medianRadius);
 
-        processImageData(newWidth, newHeight, ctx, colors, medianRadius);
+        processImageData(newWidth, newHeight, ctx, colors, medianRadius, scale);
     }
 
     img.src = imageHolder.src;
